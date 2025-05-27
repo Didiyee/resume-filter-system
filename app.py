@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer, util
 import PyPDF2
 import re
 
-# --- إعداد الصفحة ---
+# --- Prepare page---
 st.set_page_config(page_title="Resume Filter System", layout="centered")
 # st.title("📄 Resume Filter System")
 logo = Image.open("logo.png")
@@ -14,14 +14,14 @@ with col1:
     st.image(logo, width=130)
 with col2:
     st.title(" Resume Filter System 📄 \n")
-# --- تحميل نموذج BERT ---
+# --- Load model BERT ---
 @st.cache_resource
 def load_bert_model():
     return SentenceTransformer('all-MiniLM-L6-v2')
 
 model = load_bert_model()
 
-# --- استخراج النص من PDF ---
+# --- Extract text from PDF ---
 def extract_text_from_pdf(file):
     reader = PyPDF2.PdfReader(file)
     text = ""
@@ -29,18 +29,18 @@ def extract_text_from_pdf(file):
         text += page.extract_text() or ""
     return text
 
-# --- استخراج قسم الخبرة من السيرة الذاتية ---
+# --- Extract Experience from cv --
 def extract_experience_section(cv_text):
     exp_match = re.search(r"(Experience|EXPERIENCE|Work History|Professional Experience)(.*?)(Education|EDUCATION|Skills|SKILLS|$)", cv_text, re.DOTALL)
     return exp_match.group(2).strip() if exp_match else "Not found."
 
-# --- استخراج متطلبات الوظيفة ---
+# --- Extract job requirments --
 def extract_job_requirements(jd_text):
     lines = jd_text.split("\n")
     keywords = [line.strip() for line in lines if any(word in line.lower() for word in ["require", "must", "should", "responsible", "experience"])]
     return "\n".join(keywords[:5]) or "Not clearly stated."
 
-# --- تحليل السير الذاتية ---
+# --- CV Analyse ---
 def analyze_resumes(jd_text, cv_files):
     results = []
     jd_clean = jd_text.strip()
@@ -63,7 +63,7 @@ def analyze_resumes(jd_text, cv_files):
 
     return sorted(results, key=lambda x: x["score"], reverse=True)
 
-# --- التطبيق الرئيسي ---
+# --- Main App---
 def main():
     # logo = Image.open("Logo.png")
     # st.image(logo, width=200)
